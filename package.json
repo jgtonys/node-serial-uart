@@ -1,0 +1,22 @@
+{
+  "name": "serial-uart",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jgtonys/node-serial-uart.git"
+  },
+  "author": "Jungyu Kim",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jgtonys/node-serial-uart/issues"
+  },
+  "homepage": "https://github.com/jgtonys/node-serial-uart#readme",
+  "dependencies": {
+    "vue-xlsx": "^0.2.1"
+  }
+}
