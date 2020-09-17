@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div>
-      
+
     </div>
     <div>
       <v-row>
@@ -33,11 +33,7 @@
 
         </v-col>
         <v-col class="d-flex" cols="12" sm="2">
-          <v-select
-            :items="selection"
-            label="Solo field"
-            solo
-          ></v-select>
+          {{ selection }}
         </v-col>
         <v-col class="d-flex" cols="12" sm="2">
           <v-select
@@ -64,7 +60,7 @@
           <v-btn
             :loading="loading"
             :disabled="loading || !isFileExist"
-            @click="loader = 'loading'"
+            @click="test()"
           >
             Start
           </v-btn>
@@ -111,6 +107,13 @@
 
 <script>
 import XLSX from 'xlsx';
+import { ipcRenderer } from 'electron';
+//const ipcRenderer = require('electron').ipcRenderer;
+
+
+
+
+
 export default {
   data() {
     return {
@@ -119,7 +122,7 @@ export default {
       isFileExist: false,
       loader: null,
       loading: false,
-      selection: []
+      selection: [1,2]
     };
   },
   watch: {
@@ -131,6 +134,13 @@ export default {
 
       this.loader = null
     },
+  },
+  mounted () {
+    ipcRenderer.send('test');
+
+    ipcRenderer.on('resDevice', (event, args) => {
+      this.selection = args;
+    });
   },
   methods: {
     excelExport(event) {
@@ -145,12 +155,16 @@ export default {
         var fileData = reader.result;
         var wb = XLSX.read(fileData, {type : 'binary'});
         wb.SheetNames.forEach((sheetName) => {
-          var rowObj =XLSX.utils.sheet_to_json(wb.Sheets[sheetName]);        
+          var rowObj =XLSX.utils.sheet_to_json(wb.Sheets[sheetName]);
           this.excelData = rowObj;
           this.isFileExist = true;
         })
       };
       reader.readAsBinaryString(input);
+    },
+    test() {
+      //let msg = 'Hello world';
+
     }
   }
 };
