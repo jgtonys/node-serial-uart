@@ -1,9 +1,5 @@
 <template>
-  <div id="app">
-    <div>
-
-    </div>
-    <div>
+  <div id="app" data-app>
       <v-row>
         <v-col class="d-flex" cols="12" sm="2">
           <v-file-input
@@ -33,36 +29,40 @@
 
         </v-col>
         <v-col class="d-flex" cols="12" sm="2">
-          {{ selection }}
-        </v-col>
-        <v-col class="d-flex" cols="12" sm="2">
           <v-select
-            :items="selection"
+            v-model="selectedPort"
+            :items="portList"
             label="Solo field"
-            solo
           ></v-select>
         </v-col>
         <v-col class="d-flex" cols="12" sm="2">
           <v-select
             :items="selection"
             label="Solo field"
-            solo
           ></v-select>
         </v-col>
         <v-col class="d-flex" cols="12" sm="2">
           <v-select
             :items="selection"
             label="Solo field"
-            solo
           ></v-select>
         </v-col>
         <v-col class="d-flex" cols="12" sm="2">
           <v-btn
             :loading="loading"
-            :disabled="loading || !isFileExist"
-            @click="test()"
+            :disabled="loading"
+            @click="openTest()"
           >
             Start
+          </v-btn>
+        </v-col>
+        <v-col class="d-flex" cols="12" sm="2">
+          <v-btn
+            :loading="loading"
+            :disabled="loading"
+            @click="sendTest()"
+          >
+            Send
           </v-btn>
         </v-col>
 
@@ -101,7 +101,6 @@
           </tbody>
         </template>
       </v-simple-table>
-    </div>
   </div>
 </template>
 
@@ -122,16 +121,16 @@ export default {
       isFileExist: false,
       loader: null,
       loading: false,
-      selection: [1,2]
+      selection: [1,2],
+      portList: [],
+      selectedPort: ""
     };
   },
   watch: {
     loader () {
       const l = this.loader
       this[l] = !this[l]
-
       setTimeout(() => (this[l] = false), 3000)
-
       this.loader = null
     },
   },
@@ -139,8 +138,13 @@ export default {
     ipcRenderer.send('getDevice');
 
     ipcRenderer.on('resDevice', (event, args) => {
-      console.log(args);
-      this.selection = args;
+      let comList = []
+      for(let i in args) {
+        if(args[i].path != "COM1") {
+          comList.push(args[i].path);
+        }
+      }
+      this.portList = comList;
     });
   },
   methods: {
@@ -163,12 +167,16 @@ export default {
       };
       reader.readAsBinaryString(input);
     },
-    test() {
-      //let msg = 'Hello world';
-      ipcRenderer.send('sendTest', {
-        port: ""
+    openTest() {
+      ipcRenderer.send('openTest', {
+        port: this.selectedPort,
+        msg: "AT-HELP="
       });
-
+    },
+    sendTest() {
+      ipcRenderer.send('sendTest', {
+        msg: "testtest"
+      });
     }
   }
 };

@@ -24,15 +24,31 @@ ipcMain.on('getDevice', function(event, arg){
 });
 
 
-ipcMain.on('sendTest', (event, data) => {
+ipcMain.on('openTest', (event, data) => {
 	port = new SerialPort(data.port, function (err) {
 	  if (err) {
 	    return console.log('Error: ', err.message)
 	  }
-	})
-	port.open(function (error) {
-      if (error) {
-        return console.log('failed to open: ' + error);
-    }
+	});
+  port.on('open',function() {
+    port.write(data.msg,function(err) {
+      if (err) {
+        return console.log('Error on write: ', err.message);
+      }
+      console.log(data.msg + " written");
+    });
+  });
   event.sender.send('resTest', "received correctly");
-})
+});
+
+
+ipcMain.on('sendTest', (event, data) => {
+  port.on('open',function() {
+    port.write(data.msg,function(err) {
+      if (err) {
+        return console.log('Error on write: ', err.message);
+      }
+      console.log(data.msg + " written");
+    });
+  });
+});
