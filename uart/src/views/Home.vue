@@ -136,9 +136,10 @@ export default {
     },
   },
   mounted () {
-    ipcRenderer.send('test');
+    ipcRenderer.send('getDevice');
 
     ipcRenderer.on('resDevice', (event, args) => {
+      console.log(args);
       this.selection = args;
     });
   },
@@ -164,6 +165,9 @@ export default {
     },
     test() {
       //let msg = 'Hello world';
+      ipcRenderer.send('sendTest', {
+        port: ""
+      });
 
     }
   }

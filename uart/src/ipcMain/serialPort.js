@@ -1,6 +1,8 @@
 import { app, protocol, BrowserWindow, ipcMain } from 'electron'
 var SerialPort = require('serialport');
 
+let port;
+
 
 
 async function readAvailablePorts() {
@@ -10,14 +12,27 @@ async function readAvailablePorts() {
 
 
 ipcMain.on('ping', (event, data) => {
-
   event.sender.send('pong', Math.random())
 })
 
 
-ipcMain.on('test', function(event, arg){
+ipcMain.on('getDevice', function(event, arg){
   readAvailablePorts().then(function (deviceList) {
 		console.log(deviceList);
 		event.sender.send('resDevice', deviceList)
 	})
 });
+
+
+ipcMain.on('sendTest', (event, data) => {
+	port = new SerialPort(data.port, function (err) {
+	  if (err) {
+	    return console.log('Error: ', err.message)
+	  }
+	})
+	port.open(function (error) {
+      if (error) {
+        return console.log('failed to open: ' + error);
+    }
+  event.sender.send('resTest', "received correctly");
+})
